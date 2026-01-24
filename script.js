@@ -1,53 +1,79 @@
-(function () {
-  const root = document.documentElement;
-  const themeBtn = document.getElementById("themeToggle");
-  const langBtn = document.getElementById("langToggle");
-  const langLabel = document.getElementById("langLabel");
+// ============================================
+// ALTERNÂNCIA DE TEMA (CLARO/ESCURO)
+// ============================================
 
-  /* ======== TEMA ======== */
-  const savedTheme = localStorage.getItem("kalyla-theme") || "dark";
-  root.setAttribute("data-theme", savedTheme);
+const themeToggle = document.getElementById('theme-toggle');
+const body = document.body;
+const themeIcon = themeToggle.querySelector('i');
 
-  function updateThemeIcon() {
-    const mode = root.getAttribute("data-theme");
-    themeBtn.innerHTML =
-      mode === "light"
-        ? '<i class="fa-solid fa-sun"></i>'
-        : '<i class="fa-solid fa-moon"></i>';
-  }
-  updateThemeIcon();
+// Carregar tema salvo
+const savedTheme = localStorage.getItem('theme') || 'light';
+if (savedTheme === 'dark') {
+    body.setAttribute('data-theme', 'dark');
+    themeIcon.classList.replace('fa-moon', 'fa-sun');
+}
 
-  themeBtn.addEventListener("click", () => {
-    const mode = root.getAttribute("data-theme") === "light" ? "dark" : "light";
-    root.setAttribute("data-theme", mode);
-    localStorage.setItem("kalyla-theme", mode);
-    updateThemeIcon();
-  });
+// Alternar tema
+themeToggle.addEventListener('click', () => {
+    const currentTheme = body.getAttribute('data-theme');
 
-  /* ======== IDIOMA ======== */
-  const savedLang = localStorage.getItem("kalyla-lang") || "pt";
-  setLanguage(savedLang);
-
-  function setLanguage(lang) {
-    const pt = document.querySelectorAll(".lang-pt");
-    const en = document.querySelectorAll(".lang-en");
-
-    if (lang === "pt") {
-      pt.forEach(el => el.style.display = "");
-      en.forEach(el => el.style.display = "none");
-      langLabel.textContent = "EN";
+    if (currentTheme === 'dark') {
+        body.removeAttribute('data-theme');
+        themeIcon.classList.replace('fa-sun', 'fa-moon');
+        localStorage.setItem('theme', 'light');
     } else {
-      pt.forEach(el => el.style.display = "none");
-      en.forEach(el => el.style.display = "";
-      langLabel.textContent = "PT";
+        body.setAttribute('data-theme', 'dark');
+        themeIcon.classList.replace('fa-moon', 'fa-sun');
+        localStorage.setItem('theme', 'dark');
     }
+});
 
-    localStorage.setItem("kalyla-lang", lang);
-  }
+// ============================================
+// ALTERNÂNCIA DE IDIOMA (PT/EN)
+// ============================================
 
-  langBtn.addEventListener("click", () => {
-    const newLang =
-      localStorage.getItem("kalyla-lang") === "pt" ? "en" : "pt";
-    setLanguage(newLang);
-  });
-})();
+const langToggle = document.getElementById('lang-toggle');
+const langText = langToggle.querySelector('.lang-text');
+
+// Carregar idioma salvo
+const savedLang = localStorage.getItem('language') || 'pt';
+if (savedLang === 'en') {
+    switchLanguage('en');
+    langText.textContent = 'PT';
+}
+
+// Alternar idioma
+langToggle.addEventListener('click', () => {
+    const currentLang = document.documentElement.lang;
+
+    if (currentLang === 'pt-BR') {
+        switchLanguage('en');
+        langText.textContent = 'PT';
+        localStorage.setItem('language', 'en');
+    } else {
+        switchLanguage('pt');
+        langText.textContent = 'EN';
+        localStorage.setItem('language', 'pt');
+    }
+});
+
+// Função para trocar idioma
+function switchLanguage(lang) {
+    if (lang === 'en') {
+        document.documentElement.lang = 'en';
+        document.title = 'Kalyla Pinheiro | Academic Portfolio';
+
+        // Trocar todos os elementos com data-pt e data-en
+        document.querySelectorAll('[data-pt][data-en]').forEach(element => {
+            element.textContent = element.getAttribute('data-en');
+        });
+    } else {
+        document.documentElement.lang = 'pt-BR';
+        document.title = 'Kalyla Pinheiro | Portfólio Acadêmico';
+
+        // Trocar todos os elementos com data-pt e data-en
+        document.querySelectorAll('[data-pt][data-en]').forEach(element => {
+            element.textContent = element.getAttribute('data-pt');
+        });
+    }
+}
